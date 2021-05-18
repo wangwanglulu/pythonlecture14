@@ -1,0 +1,677 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Lecture 14</title>
+    <link rel="stylesheet" href="css/reveal.css">
+    <link rel="stylesheet" href="css/theme/white.css">
+    <link rel="stylesheet" href="css/theme/custom.css">
+    <!-- Theme used for syntax highlighting of code -->
+    <link rel="stylesheet" href="lib/css/github-gist.css">
+    <!-- Printing and PDF exports -->
+    <script>
+    var link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = window.location.search.match(/print-pdf/gi) ? 'css/print/pdf.css' : 'css/print/paper.css';
+    document.getElementsByTagName('head')[0].appendChild(link);
+    </script>
+</head>
+
+<body>
+    <div class="reveal" style="background-color: #fff;">
+        <div class="slides">
+            <section data-background-video="bgm.mp4" data-background-video-loop data-background-video-muted style="text-align: left;">
+                <h2 style="color: white">Python Programming</h2>
+                <h5 style="color: white">Lecture 14 Recursion, Sorting Algorithms</h5>
+            </section>
+            <section>
+                <section data-background="#2980b9" style="color: white">
+                    <h2 style="color: white">14.1 Recursion Examples</h2>
+                </section>
+                <section>
+                    <ul>
+                        <li>Example 1: The Greatest Common Divisor</li>
+                        <li>We have learned a method to do it.</li>
+                    </ul>
+                    <div class="fragment">
+                        <pre><code class="line-numbers" data-trim contenteditable>
+a = int(input('Enter your first number:'))
+b = int(input('Enter your first number:'))
+if a >= b:
+    x = a
+    y = b
+else:
+    x = b
+    y = a
+while y!=0:
+    r = y
+    y = x%y
+    x = r
+print(x)
+</code></pre>
+                    </div>
+                </section>
+                <section>
+                    <ul>
+                        <li>Let's do it with recursion.</li>
+                    </ul>
+                    <div class="fragment">
+                        <pre><code class="line-numbers" data-trim contenteditable>
+def gcd(a,b):
+    if b==0:
+        return a
+    elif a < b:
+        return gcd(b,a)
+    else:
+        return gcd(a-b, b)
+</code></pre>
+                    </div>
+                    <ul>
+                        <li class="fragment">We can make it simpler.</li>
+                    </ul>
+                    <div class="fragment">
+                        <pre><code class="line-numbers" data-trim contenteditable>
+def gcd(a,b):
+    if b==0:
+        return a
+    else:
+        return gcd(b, a % b)
+</code></pre>
+                    </div>
+                </section>
+                <section>
+                    <ul>
+                        <li>Example 2: Fibonacci Numbers</li>
+                        <li>The Fibonacci Sequence is the series of numbers:</li>
+                        <li>1, 1, 2, 3, 5, 8, 13, 21, 34, ...</li>
+                    </ul>
+                    <div class="fragment">
+                        <pre><code class="line-numbers" data-trim contenteditable>
+def fib(n)
+    if n==0 or n==1:
+        return 1
+    else:
+        return fib(n-1)+fib(n-2)
+</code></pre>
+                    </div>
+                </section>
+                <section>
+                    <ul>
+                        <li>Example 3: Full Permutation</li>
+                        <li>There is a simple way...</li>
+                    </ul>
+                    <div class="fragment">
+                        <pre><code class="line-numbers" data-trim contenteditable>
+import itertools
+for j in itertools.permutations([2,5,6]):
+    print(j)
+</code></pre>
+                    </div>
+                    <ul>
+                        <li class="fragment">Let's do it with recursion.</li>
+                    </ul>
+                    <div class="fragment">
+                        <pre><code class="line-numbers" data-trim contenteditable>
+def recursion_permutation(list, first, last):
+    if first >= last:  
+        print(list)
+    for i in range(first, last):  
+        list[i], list[first] = list[first], list[i]
+        recursion_permutation(list, first+1, last)
+        list[i], list[first] = list[first], list[i] 
+</code></pre>
+                    </div>
+                    <div class="fragment">
+                        <pre><code class="line-numbers" data-trim contenteditable>
+x=[1,2,3,4]
+recursion_permutation(x,0,len(x))
+</code></pre>
+                    </div>
+                </section>
+                <section>
+                    <ul>
+                        <li>Example 4: Hanoi</li>
+                        <li class="fragment" style="font-size: 18pt">The Tower of Hanoi is a mathematical game or puzzle. It consists of three rods and a number of disks of different sizes, which can slide onto any rod. The puzzle starts with the disks in a neat stack in ascending order of size on one rod, the smallest at the top, thus making a conical shape.</li>
+                        <li class="fragment" style="font-size: 18pt">The objective of the puzzle is to move the entire stack to another rod, obeying the following simple rules:</li>
+                        <ul class="fragment" style="font-size: 18pt">
+                            <li>Only one disk can be moved at a time.</li>
+                            <li>Each move consists of taking the upper disk from one of the stacks and placing it on top of another stack or on an empty rod.</li>
+                            <li>No larger disk may be placed on top of a smaller disk.</li>
+                        </ul>
+                    </ul>
+                </section>
+                <section>
+                    <div class="fragment"><img data-src="hanoi.jpg" style="height: 200pt"></div>
+                    <div class="fragment"><img data-src="3Hanoi.gif" style="height: 180pt"></div>
+                </section>
+                <section>
+                    <div class="fragment"><img data-src="pole.png" style="height: 200pt"></div>
+                    <div class="fragment">
+                        <pre><code class="line-numbers" data-trim contenteditable>
+def moveTower(height, fromPole, toPole, withPole):
+    if height>=1:
+        moveTower(height-1,fromPole,withPole,toPole)
+        moveDisk(fromPole,toPole)
+        moveTower(height-1,withPole,toPole,fromPole)
+
+def moveDisk(fp,tp):
+    print("moving disk from %s to %s\n" %(fp,tp))
+</code></pre>
+                    </div>
+                </section>
+            </section>
+            <section>
+                <section data-background="#2980b9" style="color: white">
+                    <h2 style="color: white">14.2 Sorting Algorithms</h2>
+                </section>
+                <section>
+                    <ul style="font-size: 18pt">
+                        <li>Sorting is the process of placing elements from a collection in some kind of order. There are many, many sorting algorithms that have been developed and analyzed. This suggests
+                            that sorting is an important area of study in computer science.</li>
+                        <ul>
+                            <li>Bubble Sort</li>
+                            <li>Selection Sort</li>
+                            <li>Insertion Sort</li>
+                            <li>Merge Sort</li>
+                            <li>Quick Sort</li>
+                        </ul>
+                    </ul>
+                </section>
+                <section>
+                    <h6>1. Bubble sort</h6>
+                    <ul style="font-size: 18pt">
+                        <li class="fragment">The bubble sort makes multiple passes through a list. It compares adjacent items and exchanges those that are out of order. Each pass through the list places the next largest value in its proper place. In essence, each item “bubbles” up to the location where it belongs.</li>
+                        <li class="fragment">If there are $n$ items in the list, then there are $n$ − 1 pairs of items that need to be compared on the first pass. It is important to note that once the largest value in the list is part of a pair, it will continually be moved along until the pass is complete.</li>
+                        <li class="fragment">At the start of the second pass, the largest value is now in place. There are $n$ − 1 items left to sort, meaning that there will be $n$ − 2 pairs. Since each pass places the next largest value in place, the total number of passes necessary will be $n$ − 1. After completing the $n$ − 1 passes, the smallest item must be in the correct position with no further processing required.</li>
+                    </ul>
+                </section>
+                <section>
+                    <div class="fragment"><img data-src="bs1.png" style="height: 400pt"></div>
+                </section>
+                <section>
+                    <div class="fragment">
+                        <pre><code class="line-numbers" data-trim contenteditable data-noescape>
+def bubble_sort(a_list):
+    for pass_num in range(len(a_list) - 1, 0, -1):
+        for i in range(pass_num):
+            if a_list[i] > a_list[i + 1]:
+                temp = a_list[i]
+                a_list[i] = a_list[i + 1]
+                a_list[i + 1] = temp
+</code></pre>
+                    </div>
+                    <div class="fragment">
+                        <pre><code class="line-numbers" data-trim contenteditable data-noescape>              
+a_list = [54, 26, 93, 17, 77, 31, 44, 55, 20]
+bubble_sort(a_list)
+print(a_list)
+</code></pre>
+                    </div>
+                </section>
+                <section>
+                    <h6>2. Selection sort</h6>
+                    <ul style="font-size: 18pt">
+                        <li>The selection sort improves on the bubble sort by making only one exchange for every pass through the list.</li>
+                        <li>As with a bubble sort, after the first pass, the largest item is in the correct place. After the second pass, the next largest is in place. This process continues and requires $n$ − 1 passes to sort $n$ items, since the final item must be in place after the ($n$ − 1)st pass.</li>
+                    </ul>
+                </section>
+                <section>
+                    <ul>
+                        <li class="fragment">
+                            <p>Suppose you have a bunch of music on your computer. For each artist, you have a play count.</p>
+                        </li>
+                    </ul>
+                    <div class="fragment"><img data-src="15.png" style="height: 200pt"></div>
+                </section>
+                <section>
+                    <ul>
+                        <li class="fragment">
+                            <p>One way is to go through the list and find the most-played artist. Add that artist to a new list.</p>
+                        </li>
+                    </ul>
+                    <div class="fragment"><img data-src="16.png" style="height: 200pt"></div>
+                    <div class="fragment"><img data-src="17.png" style="height: 200pt"></div>
+                </section>
+                <section>
+                    <ul>
+                        <li class="fragment">
+                            <p>To find the artist with the highest play count, you have to check each item in the list. This takes $O(n)$ time, as you just saw. So you have an operation that takes $O(n)$ time, and you have to do that n times:</p>
+                        </li>
+                    </ul>
+                    <div class="fragment"><img data-src="18.png" style="height: 200pt"></div>
+                    <ul>
+                        <li class="fragment">
+                            <p>This takes $O(n × n)$ time or $O(n^2)$ time.</p>
+                        </li>
+                    </ul>
+                </section>
+                <section>
+                    <div class="fragment"><img data-src="ss1.png" style="height: 400pt"></div>
+                </section>
+                <section>
+                    <div class="fragment">
+                        <pre><code class="line-numbers" data-trim contenteditable data-noescape>
+def selection_sort(a_list):
+    for fill_slot in range(len(a_list) - 1, 0, -1):
+        pos_of_max = 0
+        for location in range(1, fill_slot + 1):
+            if a_list[location] > a_list[pos_of_max]:
+                pos_of_max = location
+
+        temp = a_list[fill_slot]
+        a_list[fill_slot] = a_list[pos_of_max]
+        a_list[pos_of_max] = temp
+</code></pre>
+                    </div>
+                </section>
+                <section>
+                    <h6>3. Insertion Sort</h6>
+                    <div class="fragment"><img data-src="is1.png" style="height: 400pt"></div>
+                </section>
+                <section>
+                    <div class="fragment"><img data-src="is2.png" style="height: 400pt"></div>
+                </section>
+                <section>
+                    <div class="fragment">
+                        <pre><code class="line-numbers" data-trim contenteditable data-noescape>
+def insertion_sort(a_list):
+    for index in range(1, len(a_list)):
+        current_value = a_list[index]
+        position = index
+        while position > 0 and a_list[position - 1] > current_value:
+            a_list[position] = a_list[position - 1]
+            position = position - 1
+        a_list[position] = current_value
+</code></pre>
+                    </div>
+                </section>
+            </section>
+            <section>
+                <section data-background="#2980b9" style="color: white">
+                    <h2 style="color: white">14.3 Sorting with Recursion</h2>
+                </section>
+                <section>
+                    <h6>4. Merge Sort</h6>
+                    <ul>
+                        <li>Splitting the List in a Merge Sort</li>
+                    </ul>
+                    <div class="fragment"><img data-src="ms1.png" style="height: 400pt"></div>
+                </section>
+                <section>
+                    <ul>
+                        <li>Merge Together</li>
+                    </ul>
+                    <div class="fragment"><img data-src="ms2.png" style="height: 400pt"></div>
+                </section>
+                <section>
+                    <ul>
+                        <li>Splitting the List in a Merge Sort</li>
+                    </ul>
+                    <div class="fragment">
+                        <pre><code class="line-numbers" data-trim contenteditable data-noescape>
+def merge_sort(a_list):
+    print("Splitting ", a_list)
+    if len(a_list) > 1:
+        mid = len(a_list) // 2
+        left_half = a_list[:mid]
+        right_half = a_list[mid:]
+
+        merge_sort(left_half)
+        merge_sort(right_half)
+        i = 0
+        j = 0
+        k = 0
+</code></pre>
+                    </div>
+                </section>
+                <section>
+                    <ul>
+                        <li>Merge Together</li>
+                    </ul>
+                    <div class="fragment">
+                        <pre><code class="line-numbers" data-trim contenteditable data-noescape>
+#continue
+        while i < len(left_half) and j < len(right_half):
+            if left_half[i] < right_half[j]:
+                a_list[k] = left_half[i]
+                i = i + 1
+            else:
+                a_list[k] = right_half[j]
+                j = j + 1
+            k = k + 1
+
+        while i < len(left_half):
+            a_list[k] = left_half[i]
+            i = i + 1
+            k = k + 1
+
+        while j < len(right_half):
+            a_list[k] = right_half[j]
+            j = j + 1
+            k = k + 1
+    print("Merging ", a_list)
+</code></pre>
+                    </div>
+                </section>
+                <section>
+                    <ul style="font-size: 18pt">
+                        <li>In order to analyze the merge_sort function, we need to consider the two distinct processes that make up its implementation.</li>
+                        <li>The result of this analysis is that log $n$ splits, each of which costs $n$ for a total of $n$ log $n$ operations. A merge sort is an $O(n log n)$ algorithm.</li>
+                    </ul>
+                </section>
+                <section>
+                    <h6>5. Quick Sort</h6>
+                    <ul>
+                        <li class="fragment">
+                            <p>Base case</p>
+                        </li>
+                    </ul>
+                    <div class="fragment"><img data-src="19.png" style="height: 150pt"></div>
+                    <ul>
+                        <li class="fragment">
+                            <p>An array with two elements is pretty easy to sort, too.</p>
+                        </li>
+                    </ul>
+                    <div class="fragment"><img data-src="20.png" style="height: 120pt"></div>
+                </section>
+                <section>
+                    <ul>
+                        <li class="fragment">
+                            <p style="font-size: 18pt">What about an array of three elements?</p>
+                            <div class="fragment"><img data-src="21.png" style="height: 30pt"></div>
+                        </li>
+                        <li class="fragment">
+                            <p style="font-size: 18pt">We use D&C to solve this problem. Let's pick a <b>pivot</b> at first, say, 33.</p>
+                        </li>
+                    </ul>
+                    <div class="fragment"><img data-src="22.png" style="height: 100pt"></div>
+                    <ul>
+                        <li class="fragment">
+                            <p style="font-size: 18pt">This is called partitioning. Now you have:</p>
+                            <p style="font-size: 18pt">A sub-array of all the numbers less than the pivot</p>
+                            <p style="font-size: 18pt">The pivot</p>
+                            <p style="font-size: 18pt">A sub-array of all the numbers greater than the pivot</p>
+                        </li>
+                    </ul>
+                </section>
+                <section>
+                    <ul>
+                        <li class="fragment">
+                            <p>If the sub-arrays are sorted, then you can combine the whole thing like this—<b>left array + pivot + right array</b>—and you get a sorted array.
+                            </p>
+                        </li>
+                        <li class="fragment">
+                            <p>Suppose you have this array of five elements.
+                            </p>
+                            <div class="fragment"><img data-src="23.png" style="height: 60pt"></div>
+                        </li>
+                        <li class="fragment">
+                            <p>For example, suppose you pick 3 as the pivot. You call quicksort on the sub-arrays.
+                            </p>
+                            <div class="fragment"><img data-src="24.png" style="height: 200pt"></div>
+                        </li>
+                    </ul>
+                </section>
+                <section>
+                    <div class="fragment"><img data-src="qs1.png" style="height: 400pt"></div>
+                </section>
+                <section>
+                    <div class="fragment"><img data-src="qs2.png" style="height: 400pt"></div>
+                </section>
+                <section>
+                    <div class="fragment"><img data-src="qs3.png" style="height: 200pt"></div>
+                    <div class="fragment">
+                        <pre><code class="line-numbers" data-trim contenteditable data-noescape>
+def quick_sort(a_list):
+    quick_sort_helper(a_list, 0, len(a_list) - 1)
+def quick_sort_helper(a_list, first, last):
+    if first < last:
+        split_point = partition(a_list, first, last)
+        quick_sort_helper(a_list, first, split_point - 1)
+        quick_sort_helper(a_list, split_point + 1, last)
+</code></pre>
+                    </div>
+                </section>
+                <section>
+                    <div class="fragment">
+                        <pre><code class="line-numbers" data-trim contenteditable data-noescape>
+#continue
+def partition(a_list, first, last):
+    pivot_value = a_list[first]
+    left_mark = first + 1
+    right_mark = last
+    done = False
+    while not done:
+        while left_mark <= right_mark and a_list[left_mark] <= pivot_value:
+            left_mark = left_mark + 1
+
+        while left_mark <= right_mark and a_list[right_mark] >= pivot_value:
+            right_mark = right_mark - 1
+            </code></pre>
+                    </div>
+                    <div class="fragment">
+                        <pre><code class="line-numbers" data-trim contenteditable data-noescape>
+#continue
+        if right_mark < left_mark:
+            done = True
+        else:
+            temp = a_list[left_mark]
+            a_list[left_mark] = a_list[right_mark]
+            a_list[right_mark] = temp
+
+    temp = a_list[first]
+    a_list[first] = a_list[right_mark]
+    a_list[right_mark] = temp
+
+    return right_mark
+</code></pre>
+                    </div>
+
+                </section>
+                <section>
+                    <ul>
+                        <li class="fragment">
+                            <p>Quicksort is unique because its speed depends on the pivot you choose.</p>
+                        </li>
+                    </ul>
+                    <div class="fragment"><img data-src="25.png" style="height: 300pt"></div>
+                </section>
+                <section>
+                    <ul>
+                        <li class="fragment">
+                            <p>Actually, the big O of the quick sort algorithm depends on the pivot you pick.</p>
+                        </li>
+                        <li class="fragment">
+                            <p>In the best case, the big O of quick sort is $O(nlogn)$. However, in the worst case, the big O of it turns to be $O(n^2)$.</p>
+                        </li>
+                        <li class="fragment">
+                            <p>Why?</p>
+                        </li>
+                    </ul>
+                </section>
+                <section>
+                    <ul>
+                        <li class="fragment">
+                            <p>Worst Case</p>
+                        </li>
+                    </ul>
+                    <div class="fragment"><img data-src="26.png" style="height: 400pt"></div>
+                </section>
+                <section>
+                    <ul>
+                        <li class="fragment">
+                            <p>Best Case</p>
+                        </li>
+                    </ul>
+                    <div class="fragment"><img data-src="27.png" style="height: 300pt"></div>
+                    <ul>
+                        <li class="fragment">
+                            <p>The average case is the best case, if you pick pivot randomly.</p>
+                        </li>
+                    </ul>
+                </section>
+                <section>
+                    <ul style="font-size: 18pt">
+                        <li>A variant of the Insertion Sort: Shell Sort</li>
+                        <li>The sorting algorithm in Python: Timsort</li>
+                        <li>Timsort is a hybrid stable sorting algorithm, derived from merge sort and insertion sort, designed to perform well on many kinds of real-world data.</li>
+                    </ul>
+                </section>
+            </section>
+            <section>
+                <section data-background="#2c3e50" style="color: white; text-align: left;">
+                    <h2 style="color: white">Summary</h2>
+                    <ul>
+                        <li>Recursion Examples</li>
+                        <li>Sorting Algorithms</li>
+                    </ul>
+                </section>
+            </section>
+        </div>
+    </div>
+    <script src="lib/js/head.min.js"></script>
+    <script src="js/reveal.js"></script>
+    <script>
+    // More info about config & dependencies:
+    // - https://github.com/hakimel/reveal.js#configuration
+    // - https://github.com/hakimel/reveal.js#dependencies
+    Reveal.initialize({
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 960,
+        height: 700,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 0.1,
+
+        // Bounds for smallest/largest possible scale to apply to content
+        minScale: 0.2,
+        maxScale: 1.5,
+
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Set default timing of 2 minutes per slide
+        defaultTiming: 120,
+
+        // Display the page number of the current slide
+        slideNumber: true,
+
+        // Push each slide change to the browser history
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Vertical centering of slides
+        center: true,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autolaying embedded media (video/audio/iframe)
+        // - null: Media will only autoplay if data-autoplay is present
+        // - true: All media will autoplay, regardless of individual setting
+        // - false: No media will autoplay, regardless of individual setting
+        autoPlayMedia: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: Reveal.navigateNext,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // Hides the address bar on mobile devices
+        hideAddressBar: true,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style
+        transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+        // Transition speed
+        transitionSpeed: 'default', // default/fast/slow
+
+        // Transition style for full page slide backgrounds
+        backgroundTransition: 'fade', // none/fade/slide/convex/concave/zoom
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Parallax background image
+        parallaxBackgroundImage: '', // e.g. "'https://s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg'"
+
+        // Parallax background size
+        parallaxBackgroundSize: '', // CSS syntax, e.g. "2100px 900px"
+
+        // Number of pixels to move the parallax background per slide
+        // - Calculated automatically unless specified
+        // - Set to 0 to disable movement along an axis
+        parallaxBackgroundHorizontal: null,
+        parallaxBackgroundVertical: null,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        dependencies: [
+            { src: 'plugin/markdown/marked.js' },
+            { src: 'plugin/markdown/markdown.js' },
+            { src: 'plugin/notes/notes.js', async: true },
+            { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+            // Zoom in and out with Alt+click
+            { src: 'plugin/zoom-js/zoom.js', async: true },
+
+            // Speaker notes
+            { src: 'plugin/notes/notes.js', async: true },
+
+            // MathJax
+            { src: 'plugin/math/math.js', async: true },
+            { src: 'plugin/line-numbers/line-numbers.js' }
+        ]
+    });
+    </script>
+</body>
+
+</html>
