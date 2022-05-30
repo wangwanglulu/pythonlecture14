@@ -181,7 +181,7 @@ with open(filename, encoding="utf-8") as f_obj:
     contents = f_obj.read()
 
 def sw(filename):
-    with open(filename, encoding="utf-8") as f_obj:
+    with open(filename, encoding="utf-8") as file:
         x = file.readlines()
     y = [word.strip() for word in x]
     return y
@@ -586,7 +586,8 @@ os.chdir('figures')
                         <pre><code class="language-Python" data-line-numbers data-trim contenteditable>
 stock_list = ["0600519","0600520","0600521"]
 for x in stock_list:
-    url = "http://img1.money.126.net/data/hs/kline/day/history/2020/{}.json".format(x)
+    url = "http://img1.money.126.net/data/hs/kline\
+            /day/history/2020/{}.json".format(x)
     x_date, x_close = stock_visual(url)
     plt.style.use('ggplot')
     plt.plot(x_close, linewidth=0.5)
